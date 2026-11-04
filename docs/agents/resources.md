@@ -8,14 +8,14 @@ GitHub Issues is the project tracker. The `gh` CLI is available and authenticate
 
 The active Wayfinder map is [OCR PDF→DOCX: маршрут к работающему продукту](https://github.com/guility/eOCR/issues/1). Resolve its decision tickets one at a time; the map records context pointers, not implementation details.
 
-## OCR resources to evaluate
+## OCR-specific agent resources
 
-- **Model research:** the `hf-cli` skill is available in this Codex environment. Add it to the project if the selected model, weights, or evaluation datasets are hosted on Hugging Face.
-- **PDF and DOCX quality checks:** the `pdf` and `documents` skills are available in this Codex environment. Decide whether to vendor them after the fixture and rendering workflow is defined.
-- **OCR evaluation:** create a small project skill after agreeing on representative PDF fixtures and metrics for text, reading order, layout, runtime, and memory. Keep source documents and expected outputs versioned with clear provenance.
+- **Hugging Face artifacts:** the selected `PaddlePaddle/PaddleOCR-VL-1.6` model and MDPBench are hosted on Hugging Face. Use the host `hf-cli` skill or a container-pinned Hub client for public model cards, dataset metadata, and downloads. Pin the model revision already used by the GPU smoke (`c5630abae1d940eafe0697512a0325494b02ab42`) and keep weights in an ignored cache, never in Git. The `hf` host executable currently fails because its wrapper points at a missing Python 3.13 installation; use the pinned container or repair that environment before relying on the host CLI. Sources: [PaddleOCR-VL-1.6 model card](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.6), [MDPBench](https://huggingface.co/datasets/Delores-Lin/MDPBench), [GPU smoke and resolved revision](https://github.com/guility/eOCR/issues/19#issuecomment-6620876329).
+- **PaddleOCR MCP:** PaddleOCR publishes an MCP server that lists PaddleOCR-VL-1.6 and local inference, but also offers remote API modes. The local setup requires the PaddleOCR document-parsing extras and an inference engine; the `paddleocr_vl` tool returns Markdown rather than eOCR's structured page, graphic, signature, and DOCX contract. Do not enable it as the product's primary interface. Keep it as an optional isolated development harness after the full parser stack is available, configured for `local` inference (or a localhost self-hosted service) only. Source: [PaddleOCR MCP documentation](https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/integrations/mcp_server.en.md).
+- **MCP catalog:** the current catalog search found no PaddleOCR or Hugging Face server to enable. GitHub MCP plus `gh` remains the project-tracker integration. The PaddleOCR server is a separately run local process, not an available managed connector.
+- **PDF and DOCX review:** the `pdf` and `documents` skills are available in this Codex host for visual review. Keep reproducible rendering and validation in the containerized project tools rather than copying host-specific skills into the repository.
+- **OCR evaluation:** retain the corpus, PAGE XML profile, sidecars, and validation scripts in this repository. A separate evaluation skill can be added after the acceptance score and thresholds are resolved.
 - **Lean and Rust:** add language-specific guidance through the `lean` and `rust` packages in `agents-template-langs`, as planned. Keep OCR evaluation conventions in this repository rather than either language package.
-
-No additional MCP is selected yet. GitHub MCP plus `gh` covers planning; model and document workflows should be selected after comparing OCR candidates and the local inference interface.
 
 ## Skills lockfile and update workflow
 
