@@ -3,6 +3,15 @@
 Context: [GitHub issue #4 — Исследовать Lean→Rust interop и требования к шаблону](https://github.com/guility/eOCR/issues/4)  
 Research checked: 2026-11-04.
 
+## Update: third-party Lean-to-Rust generators
+
+Follow-up checked 2026-11-04, after the original report. The finding above is about Lean's documented native compiler/FFI; it should not be read as saying that no third-party Lean-to-Rust generator exists.
+
+- **Lungo** compiles Lean projects through Lean's compiler IR and emits Rust modules backed by a Rust port of the Lean runtime. Its trust documentation includes the Lean toolchain, worker adapter, Rust/C backends, facade conversions, runtime primitives, and host facilities in the trusted base. It validates Bridge IR and differentially tests output against Lean's native backend, but explicitly states this is not a proof of the backend. It is a candidate for template and disposable prototype work, not a verified production proof chain. ([Lungo README](https://github.com/machinefabric/lungo-rs), [architecture](https://machinefabric.com/lungo/docs/explanation/architecture), [trust and verification](https://machinefabric.com/lungo/docs/explanation/trust-and-verification))
+- **Peregrine** supports a Lean frontend and a Rust backend, but its published backend table marks Rust unverified. The Lean frontend is partially verified and lacks IO, Task, primitive arrays, and primitive floats; the documented pipeline does not target GPU kernels. ([backend assurance matrix](https://github.com/peregrine-project/peregrine-tool/blob/master/doc/backends.md), [Lean frontend limitations](https://github.com/peregrine-project/peregrine-tool/blob/master/doc/frontends.md))
+
+**Effect on the report:** there is still no official Lean Rust target, but direct third-party Lean-to-Rust code generation is available. Neither surveyed project meets eOCR's requested proof perimeter for the Rust runtime and GPU kernels. The choice between a conventional C-ABI template and a Lungo-based experimental template remains open under [issue #15](https://github.com/guility/eOCR/issues/15); neither option should be presented as satisfying the full proof requirement without an additional verified chain.
+
 ## Findings
 
 - **There is no documented direct Lean→Rust code-generation target.** The Lean reference says the compiler translates Lean IR into C, producing one C file per module, then compiles that C to native code. The documented native interop path is the platform C ABI. I found no official Rust backend/target in the Lean build documentation. Treat Rust as a C-ABI caller or implementation, not as generated Lean output. [Lean compilation](https://lean-lang.org/doc/reference/latest/Elaboration-and-Compilation/) · [Lean FFI](https://lean-lang.org/doc/reference/latest/Run-Time-Code/Foreign-Function-Interface/)
