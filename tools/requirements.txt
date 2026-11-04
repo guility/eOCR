@@ -1,0 +1,4 @@
+Pillow==13.0.0
+python-docx==1.2.0
+remotezip==0.12.6
+reportlab==5.1.0
