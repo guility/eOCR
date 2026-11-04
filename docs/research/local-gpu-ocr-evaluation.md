@@ -56,6 +56,19 @@ These are direct single-page VLM calls with one same-page warmup and one measure
 
 On this page, the model-specific prompts are close in normalized text accuracy: Ovis differs by five characters and Paddle matches the reference after markup/whitespace normalization. Paddle's common prompt omits most of the criterion sentence in the table row, while Ovis's common prompt is nearly exact. This reinforces prompt sensitivity and does not establish a model winner: the reference is only lightly audited, the sample is one English page, and no layout, formula, signature, or PDF→DOCX metrics are scored.
 
+## Real-page text probe (Simplified Chinese raster crop)
+
+A title-and-abstract crop from the staged DocLayNet Chinese patent page was compared with the corresponding title and abstract on [Google Patents](https://patents.google.com/patent/CN100339781C/zh). This is an independent text reference for a small raster crop, not a full-page or acceptance-gold annotation. We ran the same direct vLLM 0.32.0, BF16 path as above, with one same-prompt warmup and one measured call; each prompt was measured once.
+
+| Model / prompt | Observed s/crop | Text result against reference |
+|---|---:|---|
+| OvisOCR3 · common prompt | 0.354 | Body text exact; patent-label brackets differ |
+| PaddleOCR-VL-1.6 · common prompt | 0.271 | Body text exact; patent-label brackets differ |
+| OvisOCR3 · official Markdown prompt | 0.350 | Body text exact; patent-label brackets differ |
+| PaddleOCR-VL-1.6 · `OCR:` | 0.251 | Body text exact; patent-label brackets differ |
+
+All four outputs reproduced the reference body text exactly after normalizing only layout whitespace; the remaining character edits are the alternative bracket glyphs around patent labels `(54)` and `(57)`. These single warm-call timings suggest that both candidates handle this particular Simplified Chinese printed passage well, with Paddle faster in this run. The crop is small and contains no formulas, signatures, graphics, or layout challenge, so it cannot establish broad Chinese quality or a model winner.
+
 ## Deployment failures and resources
 
 - **TeleOCR:** pinned weights loaded under SGLang 0.5.23, but the direct chat-completions call produced unreadable token-like output; do not interpret its CER as model quality. The authors document a separate full parsing pipeline with layout modes and a vLLM backend ([project repository](https://github.com/caipeng328/TeleOCR)). That native path remains untested.
