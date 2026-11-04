@@ -1,0 +1,41 @@
+{
+  "fixture": "fixture-en-signature.pdf",
+  "input_page_size_pt": [
+    595.304,
+    841.89
+  ],
+  "oracle_annotation": "PAGE XML, visually reviewed and XSD-validated",
+  "ocr_or_signature_model_run": false,
+  "source_text_regions": 11,
+  "retained_text_or_formula_regions": 6,
+  "diagram_text_regions_preserved_as_picture": 5,
+  "formula": "x + y = z",
+  "formula_representation": "OMML candidate in the first two outputs; raster crop fallback in the two rendered output variants",
+  "technical_figure": "PDF page exported to a clipped SVG picture with embedded PNG fallback; not rebuilt as Word shapes",
+  "signature_region_count": 1,
+  "signature_method": "PAGE-annotated region crop embedded as PNG; detector itself was not evaluated",
+  "render_engine": "LibreOffice Writer via the eocr-corpus:local container",
+  "docx_generator": "python-docx with direct OOXML DrawingML/OMML package edits",
+  "outputs": [
+    {
+      "file": "page-faithful-omml.docx",
+      "pages": 1,
+      "preview": "page-faithful-omml-page.png"
+    },
+    {
+      "file": "editable-reflow-omml.docx",
+      "pages": 1,
+      "preview": "editable-reflow-omml-page.png"
+    },
+    {
+      "file": "page-faithful-formula-fallback.docx",
+      "pages": 1,
+      "preview": "page-faithful-formula-fallback-page.png"
+    },
+    {
+      "file": "editable-reflow-formula-fallback.docx",
+      "pages": 1,
+      "preview": "editable-reflow-formula-fallback-page.png"
+    }
+  ]
+}

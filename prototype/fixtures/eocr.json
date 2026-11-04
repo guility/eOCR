@@ -1,0 +1,17 @@
+{
+  "corpus_page_id": "synthetic-en-signature",
+  "language": "en",
+  "expected_formula": "x + y = z",
+  "formula_region_id": "math_1",
+  "expected_output_representation": "editable Word equation (OMML)",
+  "signature_count": 1,
+  "element_counts": {
+    "TextRegion": 11,
+    "MathsRegion": 1,
+    "GraphicRegion": 1,
+    "TableRegion": 1
+  },
+  "annotation_status": "source transcription, signature count, and box visually reviewed; XSD validated",
+  "provenance": "Original fictional content; includes one generated abstract raster signature mark, not a real person's signature.",
+  "license": "CC0-1.0 content; Noto fonts under SIL OFL 1.1"
+}
