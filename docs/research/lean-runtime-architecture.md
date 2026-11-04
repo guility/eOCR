@@ -2,6 +2,8 @@
 
 **Research note — 2026-11-04**
 
+**Post-quality follow-up:** candidate-specific formal-verification and Lean→Rust feasibility, based on the diagnostic OCR comparison in #25, is recorded in [ocr-proof-feasibility.md](ocr-proof-feasibility.md). Treat older model shortlist comments below as pre-quality source inventory, not model-selection guidance.
+
 ## Findings (documented facts)
 
 - **Lean compilation choices.** Lake exposes `C` and `LLVM` as compiler backends. The Lean reference describes a module path that emits C and compiles it to native code; Lake also exposes LLVM bitcode artifacts, and the FAQ identifies LLVM as the default code-generation backend in its native-execution TCB discussion. These are Lean/native build backends, and the docs do not describe a CUDA or NVIDIA GPU backend. The last sentence is an inference from the documented backend choices and artifacts. ([Lake backend API](https://lean-lang.org/doc/api/Lake/Config/LeanConfig.html), [Lean compilation pipeline](https://lean-lang.org/doc/reference/latest/Elaboration-and-Compilation/), [Lake build artifacts](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/), [Lean FAQ](https://lean-lang.org/faq/))
