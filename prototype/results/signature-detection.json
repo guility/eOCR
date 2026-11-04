@@ -1,0 +1,50 @@
+{
+  "model": "mdefrance/yolos-tiny-signature-detection",
+  "revision": "b788cf7376464453c3dea1e5ee8589adcaa0c634",
+  "image": "prototype/results/source-page.png",
+  "reference_bbox": [
+    146.0,
+    488.0,
+    456.0,
+    530.0
+  ],
+  "detections_at_0_25": [
+    {
+      "score": 0.6484077572822571,
+      "bbox": [
+        119.79463958740234,
+        479.6805725097656,
+        431.394775390625,
+        544.0775756835938
+      ]
+    },
+    {
+      "score": 0.48132115602493286,
+      "bbox": [
+        133.7554931640625,
+        481.491943359375,
+        416.04986572265625,
+        544.6615600585938
+      ]
+    }
+  ],
+  "best_iou_at_0_25": 0.5680969237242507,
+  "padded_crop_bbox": [
+    88.63462600708007,
+    473.2408721923828,
+    462.55478897094724,
+    550.5172760009766
+  ],
+  "padding": "10% of predicted width and height",
+  "forward_latency_ms_after_3_warmups": {
+    "p50": 4.405,
+    "mean": 4.872
+  },
+  "peak_cuda_allocated_mib": 83.65,
+  "environment": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.19.0",
+    "pillow": "13.0.0"
+  }
+}

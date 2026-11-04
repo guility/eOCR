@@ -1,0 +1,463 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15">
+  <Metadata>
+    <Creator>eOCR corpus tooling</Creator>
+    <Created>2026-11-04T00:00:00Z</Created>
+    <LastChange>2026-11-04T00:00:00Z</LastChange>
+  </Metadata>
+  <Page imageFilename="page.png" imageWidth="1241" imageHeight="1754">
+    <ReadingOrder>
+      <OrderedGroup id="ro_1">
+        <RegionRefIndexed index="0" regionRef="text_0"/>
+        <RegionRefIndexed index="1" regionRef="text_1"/>
+        <RegionRefIndexed index="2" regionRef="text_2"/>
+        <RegionRefIndexed index="3" regionRef="diagram_1"/>
+        <RegionRefIndexed index="4" regionRef="text_3"/>
+        <RegionRefIndexed index="5" regionRef="text_4"/>
+        <RegionRefIndexed index="6" regionRef="text_5"/>
+        <RegionRefIndexed index="7" regionRef="text_6"/>
+        <RegionRefIndexed index="8" regionRef="text_10"/>
+        <RegionRefIndexed index="9" regionRef="text_7"/>
+        <RegionRefIndexed index="10" regionRef="math_1"/>
+        <RegionRefIndexed index="11" regionRef="text_8"/>
+        <RegionRefIndexed index="12" regionRef="signature_1"/>
+        <RegionRefIndexed index="13" regionRef="text_9"/>
+      </OrderedGroup>
+    </ReadingOrder>
+    <TextRegion id="text_0" type="paragraph">
+      <Coords points="387,113 854,113 854,164 387,164"/>
+      <TextLine id="text_0_line_0">
+        <Coords points="387,113 854,113 854,164 387,164"/>
+        <Word id="text_0_line_0_word_0">
+          <Coords points="387,113 564,113 564,164 387,164"/>
+          <TextEquiv index="0">
+            <Unicode>Technical</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_0_line_0_word_1">
+          <Coords points="574,113 717,113 717,164 574,164"/>
+          <TextEquiv index="0">
+            <Unicode>process</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_0_line_0_word_2">
+          <Coords points="726,113 854,113 854,164 726,164"/>
+          <TextEquiv index="0">
+            <Unicode>fixture</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>Technical process fixture</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>Technical process fixture</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_1" type="paragraph">
+      <Coords points="120,192 963,192 963,223 120,223"/>
+      <TextLine id="text_1_line_0">
+        <Coords points="120,192 963,192 963,223 120,223"/>
+        <Word id="text_1_line_0_word_0">
+          <Coords points="120,192 160,192 160,223 120,223"/>
+          <TextEquiv index="0">
+            <Unicode>The</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_1">
+          <Coords points="166,192 242,192 242,223 166,223"/>
+          <TextEquiv index="0">
+            <Unicode>system</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_2">
+          <Coords points="248,192 354,192 354,223 248,223"/>
+          <TextEquiv index="0">
+            <Unicode>preserves</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_3">
+          <Coords points="360,192 395,192 395,223 360,223"/>
+          <TextEquiv index="0">
+            <Unicode>the</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_4">
+          <Coords points="401,192 461,192 461,223 401,223"/>
+          <TextEquiv index="0">
+            <Unicode>order</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_5">
+          <Coords points="467,192 489,192 489,223 467,223"/>
+          <TextEquiv index="0">
+            <Unicode>of</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_6">
+          <Coords points="494,192 542,192 542,223 494,223"/>
+          <TextEquiv index="0">
+            <Unicode>text,</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_7">
+          <Coords points="548,192 619,192 619,223 548,223"/>
+          <TextEquiv index="0">
+            <Unicode>tables,</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_8">
+          <Coords points="625,192 733,192 733,223 625,223"/>
+          <TextEquiv index="0">
+            <Unicode>diagrams,</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_9">
+          <Coords points="739,192 780,192 780,223 739,223"/>
+          <TextEquiv index="0">
+            <Unicode>and</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_10">
+          <Coords points="786,192 859,192 859,223 786,223"/>
+          <TextEquiv index="0">
+            <Unicode>source</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_1_line_0_word_11">
+          <Coords points="865,192 963,192 963,223 865,223"/>
+          <TextEquiv index="0">
+            <Unicode>graphics.</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>The system preserves the order of text, tables, diagrams, and source graphics.</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>The system preserves the order of text, tables, diagrams, and source graphics.</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_2" type="paragraph">
+      <Coords points="120,247 397,247 397,280 120,280"/>
+      <TextLine id="text_2_line_0">
+        <Coords points="120,247 397,247 397,280 120,280"/>
+        <Word id="text_2_line_0_word_0">
+          <Coords points="120,249 229,249 229,280 120,280"/>
+          <TextEquiv index="0">
+            <Unicode>Technical</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_2_line_0_word_1">
+          <Coords points="235,249 284,249 284,280 235,280"/>
+          <TextEquiv index="0">
+            <Unicode>flow</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_2_line_0_word_2">
+          <Coords points="290,249 300,249 300,280 290,280"/>
+          <TextEquiv index="0">
+            <Unicode>/</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_2_line_0_word_3">
+          <Coords points="306,247 397,247 397,280 306,280"/>
+          <TextEquiv index="0">
+            <Unicode>技術流程</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>Technical flow / 技術流程</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>Technical flow / 技術流程</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_3" type="paragraph">
+      <Coords points="159,308 260,308 260,337 159,337"/>
+      <TextLine id="text_3_line_0">
+        <Coords points="159,308 260,308 260,337 159,337"/>
+        <Word id="text_3_line_0_word_0">
+          <Coords points="159,308 198,308 198,337 159,337"/>
+          <TextEquiv index="0">
+            <Unicode>PDF</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_3_line_0_word_1">
+          <Coords points="204,308 260,308 260,337 204,337"/>
+          <TextEquiv index="0">
+            <Unicode>input</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>PDF input</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>PDF input</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_4" type="paragraph">
+      <Coords points="403,308 416,308 416,337 403,337"/>
+      <TextLine id="text_4_line_0">
+        <Coords points="403,308 416,308 416,337 403,337"/>
+        <Word id="text_4_line_0_word_0">
+          <Coords points="403,308 416,308 416,337 403,337"/>
+          <TextEquiv index="0">
+            <Unicode>→</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>→</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>→</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_5" type="paragraph">
+      <Coords points="556,308 663,308 663,337 556,337"/>
+      <TextLine id="text_5_line_0">
+        <Coords points="556,308 663,308 663,337 556,337"/>
+        <Word id="text_5_line_0_word_0">
+          <Coords points="556,308 600,308 600,337 556,337"/>
+          <TextEquiv index="0">
+            <Unicode>OCR</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_5_line_0_word_1">
+          <Coords points="605,308 663,308 663,337 605,337"/>
+          <TextEquiv index="0">
+            <Unicode>stage</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>OCR stage</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>OCR stage</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_6" type="paragraph">
+      <Coords points="804,308 816,308 816,337 804,337"/>
+      <TextLine id="text_6_line_0">
+        <Coords points="804,308 816,308 816,337 804,337"/>
+        <Word id="text_6_line_0_word_0">
+          <Coords points="804,308 816,308 816,337 804,337"/>
+          <TextEquiv index="0">
+            <Unicode>→</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>→</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>→</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_7" type="paragraph">
+      <Coords points="120,364 438,364 438,398 120,398"/>
+      <TextLine id="text_7_line_0">
+        <Coords points="120,364 438,364 438,398 120,398"/>
+        <Word id="text_7_line_0_word_0">
+          <Coords points="120,366 229,366 229,397 120,397"/>
+          <TextEquiv index="0">
+            <Unicode>Reference</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_7_line_0_word_1">
+          <Coords points="235,366 337,366 337,397 235,397"/>
+          <TextEquiv index="0">
+            <Unicode>equation:</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_7_line_0_word_2">
+          <Coords points="343,364 358,364 358,398 343,398"/>
+          <TextEquiv index="0">
+            <Unicode>x</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_7_line_0_word_3">
+          <Coords points="364,364 378,364 378,398 364,398"/>
+          <TextEquiv index="0">
+            <Unicode>+</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_7_line_0_word_4">
+          <Coords points="384,364 399,364 399,398 384,398"/>
+          <TextEquiv index="0">
+            <Unicode>y</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_7_line_0_word_5">
+          <Coords points="405,364 419,364 419,398 405,398"/>
+          <TextEquiv index="0">
+            <Unicode>=</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_7_line_0_word_6">
+          <Coords points="426,364 438,364 438,398 426,398"/>
+          <TextEquiv index="0">
+            <Unicode>z</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>Reference equation: x + y = z</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>Reference equation: x + y = z</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_8" type="paragraph">
+      <Coords points="120,424 599,424 599,452 120,452"/>
+      <TextLine id="text_8_line_0">
+        <Coords points="120,424 599,424 599,452 120,452"/>
+        <Word id="text_8_line_0_word_0">
+          <Coords points="120,424 210,424 210,452 120,452"/>
+          <TextEquiv index="0">
+            <Unicode>Synthetic</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_8_line_0_word_1">
+          <Coords points="216,424 309,424 309,452 216,452"/>
+          <TextEquiv index="0">
+            <Unicode>signature</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_8_line_0_word_2">
+          <Coords points="315,424 409,424 409,452 315,452"/>
+          <TextEquiv index="0">
+            <Unicode>specimen</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_8_line_0_word_3">
+          <Coords points="414,424 453,424 453,452 414,452"/>
+          <TextEquiv index="0">
+            <Unicode>(not</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_8_line_0_word_4">
+          <Coords points="459,424 470,424 470,452 459,452"/>
+          <TextEquiv index="0">
+            <Unicode>a</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_8_line_0_word_5">
+          <Coords points="476,424 513,424 513,452 476,452"/>
+          <TextEquiv index="0">
+            <Unicode>real</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_8_line_0_word_6">
+          <Coords points="518,424 599,424 599,452 518,452"/>
+          <TextEquiv index="0">
+            <Unicode>person):</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>Synthetic signature specimen (not a real person):</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>Synthetic signature specimen (not a real person):</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_9" type="paragraph">
+      <Coords points="402,1686 839,1686 839,1709 402,1709"/>
+      <TextLine id="text_9_line_0">
+        <Coords points="402,1686 839,1686 839,1709 402,1709"/>
+        <Word id="text_9_line_0_word_0">
+          <Coords points="402,1686 445,1686 445,1709 402,1709"/>
+          <TextEquiv index="0">
+            <Unicode>eOCR</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_1">
+          <Coords points="450,1686 520,1686 520,1709 450,1709"/>
+          <TextEquiv index="0">
+            <Unicode>synthetic</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_2">
+          <Coords points="525,1686 578,1686 578,1709 525,1709"/>
+          <TextEquiv index="0">
+            <Unicode>corpus</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_3">
+          <Coords points="582,1686 619,1686 619,1709 582,1709"/>
+          <TextEquiv index="0">
+            <Unicode>seed</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_4">
+          <Coords points="624,1686 628,1686 628,1709 624,1709"/>
+          <TextEquiv index="0">
+            <Unicode>·</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_5">
+          <Coords points="633,1686 695,1686 695,1709 633,1709"/>
+          <TextEquiv index="0">
+            <Unicode>fictional</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_6">
+          <Coords points="699,1686 775,1686 775,1709 699,1709"/>
+          <TextEquiv index="0">
+            <Unicode>reference</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_9_line_0_word_7">
+          <Coords points="779,1686 839,1686 839,1709 779,1709"/>
+          <TextEquiv index="0">
+            <Unicode>content</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>eOCR synthetic corpus seed · fictional reference content</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>eOCR synthetic corpus seed · fictional reference content</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion id="text_10" type="paragraph">
+      <Coords points="935,308 1085,308 1085,337 935,337"/>
+      <TextLine id="text_10_line_0">
+        <Coords points="935,308 1085,308 1085,337 935,337"/>
+        <Word id="text_10_line_0_word_0">
+          <Coords points="935,308 1020,308 1020,337 935,337"/>
+          <TextEquiv index="0">
+            <Unicode>Editable</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="text_10_line_0_word_1">
+          <Coords points="1026,308 1085,308 1085,337 1026,337"/>
+          <TextEquiv index="0">
+            <Unicode>DOCX</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv index="0">
+          <Unicode>Editable DOCX</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv index="0">
+        <Unicode>Editable DOCX</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <MathsRegion id="math_1">
+      <Coords points="343,364 438,364 438,398 343,398"/>
+    </MathsRegion>
+    <GraphicRegion id="signature_1" type="signature">
+      <Coords points="89,473 463,473 463,551 89,551"/>
+    </GraphicRegion>
+    <TableRegion id="diagram_1">
+      <Coords points="107,306 1110,306 1110,363 107,363"/>
+    </TableRegion>
+  </Page>
+</PcGts>

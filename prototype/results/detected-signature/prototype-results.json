@@ -1,0 +1,85 @@
+{
+  "fixture": "fixture-en-signature.pdf",
+  "input_page_size_pt": [
+    595.304,
+    841.89
+  ],
+  "oracle_annotation": "PAGE XML oracle for text/math/diagram; signature box replaced by detector prediction",
+  "source_text_regions": 11,
+  "retained_text_or_formula_regions": 6,
+  "diagram_text_regions_preserved_as_picture": 5,
+  "formula": "x + y = z",
+  "formula_representation": "OMML candidate in the first two outputs; raster crop fallback in the two rendered output variants",
+  "technical_figure": "PDF page exported to a clipped SVG picture with embedded PNG fallback; not rebuilt as Word shapes",
+  "signature_region_count": 1,
+  "signature_method": "YOLOS-tiny top detection, padded 10% per axis, then embedded as a PNG crop",
+  "render_engine": "LibreOffice Writer via the eocr-corpus:local container",
+  "docx_generator": "python-docx with direct OOXML DrawingML/OMML package edits",
+  "outputs": [
+    {
+      "file": "page-faithful-omml.docx",
+      "pages": 1,
+      "preview": "page-faithful-omml-page.png"
+    },
+    {
+      "file": "editable-reflow-omml.docx",
+      "pages": 1,
+      "preview": "editable-reflow-omml-page.png"
+    },
+    {
+      "file": "page-faithful-formula-fallback.docx",
+      "pages": 1,
+      "preview": "page-faithful-formula-fallback-page.png"
+    },
+    {
+      "file": "editable-reflow-formula-fallback.docx",
+      "pages": 1,
+      "preview": "editable-reflow-formula-fallback-page.png"
+    }
+  ],
+  "ocr_model_run": false,
+  "signature_detector_run": true,
+  "signature_detector_quality_scope": "one synthetic fixture; integration smoke check, not a detector quality estimate",
+  "signature_detector": {
+    "model": "mdefrance/yolos-tiny-signature-detection",
+    "revision": "b788cf7376464453c3dea1e5ee8589adcaa0c634",
+    "detections_at_0_25": [
+      {
+        "score": 0.6484077572822571,
+        "bbox": [
+          119.79463958740234,
+          479.6805725097656,
+          431.394775390625,
+          544.0775756835938
+        ]
+      },
+      {
+        "score": 0.48132115602493286,
+        "bbox": [
+          133.7554931640625,
+          481.491943359375,
+          416.04986572265625,
+          544.6615600585938
+        ]
+      }
+    ],
+    "best_iou_at_0_25": 0.5680969237242507,
+    "padded_crop_bbox": [
+      88.63462600708007,
+      473.2408721923828,
+      462.55478897094724,
+      550.5172760009766
+    ],
+    "forward_latency_ms_after_3_warmups": {
+      "p50": 4.405,
+      "mean": 4.872
+    },
+    "peak_cuda_allocated_mib": 83.65,
+    "environment": {
+      "gpu": "NVIDIA GeForce RTX 5090",
+      "torch": "2.13.0+cu130",
+      "transformers": "5.19.0",
+      "pillow": "13.0.0"
+    }
+  }
+}
