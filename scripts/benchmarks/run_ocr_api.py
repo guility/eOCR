@@ -7,12 +7,17 @@ from pathlib import Path
 from metrics import edit_distance, formula_key, normalize_text, without_footer, without_formula
 
 
-def request_ocr(base_url: str, model: str, prompt: str, image: bytes, max_tokens: int) -> tuple[str, float, dict]:
+def request_ocr(base_url: str, model: str, prompt: str, image: bytes, max_tokens: int,
+                system_prompt: str = "", image_first: bool = False) -> tuple[str, float, dict]:
     image_url = "data:image/png;base64," + base64.b64encode(image).decode("ascii")
-    body = {"model": model, "messages": [{"role": "user", "content": [
-        {"type": "text", "text": prompt},
-        {"type": "image_url", "image_url": {"url": image_url, "detail": "high"}},
-    ]}], "temperature": 0, "max_tokens": max_tokens}
+    image_part = {"type": "image_url", "image_url": {"url": image_url, "detail": "high"}}
+    text_part = {"type": "text", "text": prompt}
+    content = [image_part, text_part] if image_first else [text_part, image_part]
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": content})
+    body = {"model": model, "messages": messages, "temperature": 0, "max_tokens": max_tokens}
     request = urllib.request.Request(base_url.rstrip("/") + "/chat/completions",
                                      data=json.dumps(body).encode(),
                                      headers={"Content-Type": "application/json"})
@@ -32,6 +37,9 @@ def main() -> None:
     parser.add_argument("--model", required=True)
     parser.add_argument("--revision", required=True)
     parser.add_argument("--prompt", default="OCR:")
+    parser.add_argument("--system-prompt", default="")
+    parser.add_argument("--image-first", action="store_true",
+                        help="Place the image before the text in the user message")
     parser.add_argument("--formula-prompt")
     parser.add_argument("--dataset-root", type=Path, default=Path("/workspace/.delta/corpus/seed"))
     parser.add_argument("--output", type=Path, required=True)
@@ -41,18 +49,22 @@ def main() -> None:
     pages = manifest["synthetic_pages"]
     first = pages[0]
     request_ocr(args.base_url, args.model, args.prompt,
-                (args.dataset_root / first["page_image"]).read_bytes(), args.max_tokens)
+                (args.dataset_root / first["page_image"]).read_bytes(), args.max_tokens,
+                args.system_prompt, args.image_first)
     if args.formula_prompt:
         request_ocr(args.base_url, args.model, args.formula_prompt,
-                    (args.dataset_root / first["page_image"]).read_bytes(), args.max_tokens)
+                    (args.dataset_root / first["page_image"]).read_bytes(), args.max_tokens,
+                    args.system_prompt, args.image_first)
     rows = []
     for page in pages:
         image = (args.dataset_root / page["page_image"]).read_bytes()
-        output, seconds, usage = request_ocr(args.base_url, args.model, args.prompt, image, args.max_tokens)
+        output, seconds, usage = request_ocr(args.base_url, args.model, args.prompt, image,
+                                             args.max_tokens, args.system_prompt, args.image_first)
         formula_output, formula_seconds, formula_usage = "", 0.0, {}
         if args.formula_prompt:
             formula_output, formula_seconds, formula_usage = request_ocr(
-                args.base_url, args.model, args.formula_prompt, image, args.max_tokens)
+                args.base_url, args.model, args.formula_prompt, image, args.max_tokens,
+                args.system_prompt, args.image_first)
         expected_formula = formula_key(page.get("expected_formula", ""))
         gold = normalize_text(page["expected_text"])
         hypothesis = without_formula(output, expected_formula)
@@ -79,7 +91,8 @@ def main() -> None:
                      "usage": usage, "formula_usage": formula_usage})
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps({"model": args.model, "revision": args.revision,
-                                       "prompt": args.prompt, "warmup": True,
+                                       "prompt": args.prompt, "system_prompt": args.system_prompt,
+                                       "image_first": args.image_first, "warmup": True,
                                        "pages": rows}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"model": args.model, "pages": len(rows),
                       "mean_seconds": sum(row["seconds"] for row in rows) / len(rows),

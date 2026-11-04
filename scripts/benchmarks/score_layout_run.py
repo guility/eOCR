@@ -16,11 +16,18 @@ TEXT_LABELS = {
     "text", "title", "doc_title", "paragraph_title", "section-header",
     "section_header", "caption", "figure_title", "list-item", "list_item",
     "footnote", "footer", "page-footer", "page_footer", "header", "page-header",
-    "page_header", "reference", "abstract",
+    "page_header", "page_number", "aside_text", "reference", "abstract",
 }
 FORMULA_LABELS = {"formula", "math", "maths", "maths_region", "equation", "vision_footnote"}
 TABLE_LABELS = {"table", "table_region"}
-IMAGE_LABELS = {"image", "picture", "graphic", "figure", "image_region", "graphic_region"}
+IMAGE_LABELS = {
+    "image", "picture", "graphic", "figure", "diagram", "chart", "signature", "stamp",
+    "image_region", "graphic_region", "header_image", "footer_image",
+}
+GROUNDING_MARKER = re.compile(
+    r"!\[([^\]]+)\]\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,"
+    r"\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)"
+)
 
 
 def local_name(tag: str) -> str:
@@ -112,6 +119,24 @@ def parse_structured(raw: str) -> list[dict]:
     return []
 
 
+def parse_grounded_markdown(raw: str) -> list[dict]:
+    """Parse LightOnOCR grounding markers with coordinates normalized to 0–1000."""
+    matches = list(GROUNDING_MARKER.finditer(raw))
+    blocks = []
+    for index, match in enumerate(matches):
+        content_start = match.end()
+        content_end = matches[index + 1].start() if index + 1 < len(matches) else len(raw)
+        blocks.append({
+            "label": match.group(1),
+            "bbox": [float(match.group(i)) for i in range(2, 6)],
+            "text": raw[content_start:content_end].strip(),
+            "order": index,
+            "sequence": index,
+            "order_declared": True,
+        })
+    return blocks
+
+
 def predicted_blocks(raw_page: dict, run_path: Path, width: int, height: int) -> tuple[list[dict], int, int]:
     """Return normalized block fields and the coordinate size used by the prediction."""
     output_path = run_path.parent / raw_page["result"] if raw_page.get("result") else None
@@ -144,6 +169,9 @@ def predicted_blocks(raw_page: dict, run_path: Path, width: int, height: int) ->
     raw = raw_page.get("output", "")
     if isinstance(raw, list):
         raw = "\n".join(part.get("text", "") for part in raw if isinstance(part, dict))
+    grounded = parse_grounded_markdown(str(raw))
+    if grounded:
+        return grounded, 1000, 1000
     blocks = parse_structured(str(raw))
     normalized = []
     for index, item in enumerate(blocks):
@@ -201,7 +229,8 @@ def canonical_math(value: str) -> str:
     return re.sub(r"[^\w=+*/().-]", "", value, flags=re.UNICODE).casefold()
 
 
-def run_score(run_path: Path, dataset_root: Path, threshold: float) -> dict:
+def run_score(run_path: Path, dataset_root: Path, threshold: float,
+              exclude_image_text: bool = False) -> dict:
     manifest = json.loads((dataset_root / "manifest.json").read_text(encoding="utf-8"))
     references = {item["id"]: item for item in manifest["synthetic_pages"]}
     run = json.loads(run_path.read_text(encoding="utf-8"))
@@ -250,7 +279,8 @@ def run_score(run_path: Path, dataset_root: Path, threshold: float) -> dict:
                 "f1": f1, "mean_matched_iou": sum(row[2] for row in matches) / tp if tp else None,
             }
 
-        text_blocks = [block["text"] for block in blocks if block["text"]]
+        text_blocks = [block["text"] for block in blocks if block["text"]
+                       and not (exclude_image_text and semantic(block["label"]) == "image")]
         prediction_text = " ".join(text_blocks)
         expected_formula = formula_key(reference.get("expected_formula", ""))
         gold_text = normalize_text(reference.get("expected_text", ""))
@@ -308,6 +338,7 @@ def run_score(run_path: Path, dataset_root: Path, threshold: float) -> dict:
         "formula_found_pages": sum(row["formula_found"] for row in page_rows),
         "formula_classified_pages": sum(row["formula_labelled_as_formula"] for row in page_rows),
         "layout_iou_threshold": threshold, "pages": page_rows,
+        "image_description_text_included_in_cer": not exclude_image_text,
         "interpretation": "Diagnostic only: six synthetic pages; PAGE XML text-region granularity is not guaranteed to match model block granularity; no DOCX rendering or release threshold.",
     }
 
@@ -318,16 +349,19 @@ def main() -> None:
     parser.add_argument("--dataset-root", type=Path, default=Path(".delta/corpus/seed"))
     parser.add_argument("--iou-threshold", type=float, default=0.5)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--exclude-image-text", action="store_true",
+                        help="Exclude visual descriptions from OCR text CER")
     args = parser.parse_args()
-    result = score_run(args.run, args.dataset_root, args.iou_threshold)
+    result = score_run(args.run, args.dataset_root, args.iou_threshold, args.exclude_image_text)
     rendered = json.dumps(result, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.write_text(rendered, encoding="utf-8")
     print(rendered, end="")
 
 
-def score_run(run_path: Path, dataset_root: Path, threshold: float) -> dict:
-    return run_score(run_path, dataset_root, threshold)
+def score_run(run_path: Path, dataset_root: Path, threshold: float,
+              exclude_image_text: bool = False) -> dict:
+    return run_score(run_path, dataset_root, threshold, exclude_image_text)
 
 
 if __name__ == "__main__":
