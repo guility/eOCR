@@ -1,6 +1,6 @@
 # OCR shortlist: formal-proof and Lean→Rust feasibility
 
-**Research snapshot:** 2026-11-04  
+**Research snapshot:** 2026-11-04
 **Scope:** static audit of public local inference paths for the quality shortlist in [issue #22](https://github.com/guility/eOCR/blob/research/frontier-gpu-ocr/docs/research/frontier-gpu-ocr.md), in response to [issue #24](https://github.com/guility/eOCR/issues/24). No models, GPU kernels, benchmarks, tracing, or proofs were run.
 
 ## Finding
