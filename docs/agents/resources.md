@@ -21,7 +21,7 @@ The active Wayfinder map is [OCR PDF→DOCX: маршрут к работающ�
 
 The canonical project lock is the root `skills-lock.json`; the Vercel Skills CLI reads and writes it there. It is the second eOCR-specific root allowlist extension after `GLOSSARY.md`, and is excluded from the baseline's manually maintained file-size limits as a generated lockfile. Keep the reviewed skill copies under `.agents/skills/` and commit them together with the lock. Do not hand-edit the lock.
 
-Pin the CLI to `skills@1.7.6` and use Node.js `>=22.20.0` (the package engine requirement). The currently configured Node 22.14.0 must be upgraded before running this pinned CLI.
+Pin the CLI to `skills@1.7.6` and use Node.js `>=22.20.0` (the package engine requirement). The Windows host was verified on 2026-11-04 with Node.js `v26.13.0`, which meets the requirement.
 
 - After these project files are committed, a clean checkout contains the skill files; no installation is needed.
 - Restore missing skill files: `npx --yes skills@1.7.6 experimental_install --frozen-lockfile`. This command is experimental; it verifies restored contents against the lock hashes and fails rather than silently changing the lock.
