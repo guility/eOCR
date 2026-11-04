@@ -326,7 +326,10 @@ def add_textbox(doc: Document, item: dict, image_size: tuple[int, int], page_pt:
     spacing.set(qn("w:before"), "0")
     spacing.set(qn("w:after"), "0")
     inner_props.append(spacing)
-    if item.get("id") == "text_0":
+    centered = item.get("centered")
+    if centered is None:
+        centered = item.get("id") == "text_0"
+    if centered:
         justification = OxmlElement("w:jc")
         justification.set(qn("w:val"), "center")
         inner_props.append(justification)
@@ -340,9 +343,13 @@ def add_textbox(doc: Document, item: dict, image_size: tuple[int, int], page_pt:
         text_size, bold = 13, True
     elif item.get("id") == "text_9":
         text_size = 9
+    if item.get("text_size") is not None:
+        text_size = item["text_size"]
+    if item.get("bold") is not None:
+        bold = item["bold"]
     if item["kind"] == "formula":
         # Leave the formula's original PAGE box enough room for the editable prefix.
-        text_size = 11
+        text_size = item.get("text_size", 11)
     if item["kind"] == "formula":
         _text_run(inner, item["prefix"] + (" " if formula_as_image else " "), text_size)
         if not formula_as_image:
@@ -384,6 +391,9 @@ def add_textbox(doc: Document, item: dict, image_size: tuple[int, int], page_pt:
 def anchor_picture(shape, box: tuple[int, int, int, int], image_size: tuple[int, int], page_pt: tuple[float, float]) -> str:
     inline = shape._inline
     relationship_id = inline.graphic.graphicData.pic.blipFill.blip.embed
+    doc_pr = inline.find(qn("wp:docPr"))
+    if doc_pr is None or doc_pr.get("id") is None:
+        raise RuntimeError("anchored picture is missing its unique wp:docPr id")
     inline.tag = qn("wp:anchor")
     for key, value in {
         "distT": "0",
@@ -391,7 +401,9 @@ def anchor_picture(shape, box: tuple[int, int, int, int], image_size: tuple[int,
         "distL": "0",
         "distR": "0",
         "simplePos": "0",
-        "relativeHeight": "1",
+        # Keep picture and text-box z-orders unique. Reusing 1 made Word render
+        # later anchored pictures inconsistently when the source was a scan.
+        "relativeHeight": doc_pr.get("id"),
         "behindDoc": "0",
         "locked": "0",
         "layoutInCell": "1",
@@ -450,6 +462,10 @@ def add_text_item(doc: Document, item: dict, formula_as_image: bool, fallback_pa
         text_size, bold = 13, True
     elif item["id"] == "text_9":
         text_size = 9
+    if item.get("text_size") is not None:
+        text_size = item["text_size"]
+    if item.get("bold") is not None:
+        bold = item["bold"]
 
     if item["kind"] == "formula" and not formula_as_image:
         run = paragraph.add_run(item["prefix"] + " ")
