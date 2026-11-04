@@ -4,7 +4,7 @@
 
 ## Test setup
 
-- Six authored synthetic pages: English, Russian, Simplified Chinese, Traditional Chinese, one raster signature, and an image-only scan. All are 1241×1754 PNG renders with authored transcription and formula references. Two separately staged DocLayNet-v1.1 pages have provider text-cell transcripts and region labels, but their transcription and reading order are not manually verified (the Chinese page has known text errors), so they are excluded from this CER. The English tender page's source PDF has an extractable text layer; `pdftotext -layout` provides a draft reference that still needs manual audit. No model scores on that real page are included here. The set is diagnostic, not acceptance-sized.
+- Six authored synthetic pages: English, Russian, Simplified Chinese, Traditional Chinese, one raster signature, and an image-only scan. All are 1241×1754 PNG renders with authored transcription and formula references. Two separately staged DocLayNet-v1.1 pages have provider text-cell transcripts and region labels; the Chinese page has known text errors, and neither page has manually verified labels. The English tender page's source PDF has an extractable text layer. Its separate one-page probe below adds the visibly rasterized ECHA logo and manually restores the table row's reading order after visual inspection; it is not merged into the six-page aggregate. The corpus and license provenance are in the [starter corpus README](../corpus/README.md).
 - Direct single-page VLM calls, not full PDF parsing or PDF→DOCX. Tables are scored only as text; layout, reading order, element localization, signatures, vectors, and DOCX structure are not scored.
 - vLLM 0.32.0, BF16, max context 8192, one sequence, 8192 batched tokens, 50% GPU memory budget, one unmeasured warmup, then six serial requests, max 2048 output tokens. Images were sent at high detail. All API calls set `temperature=0`; other sampler parameters used the engine/model defaults. TeleOCR used SGLang 0.5.23 and its model defaults because it failed to initialize under pinned vLLM; its output is excluded from ranking.
 - Model revisions: Paddle `c5630abae1d940eafe0697512a0325494b02ab42`; Ovis `17f255e2c8ae6d18d5d5edb0a474bd4ed39aef90`; GLM `2e85a62840ccac27daa451df36c736c4636b8628`; Xiaomi `bbd8cf8d21f256b3644b44cb860f3a7cecb93c30`; Tele `b3f6a0c084db72f971e19a779d2fd8a6bc9e3b8d`.
@@ -40,6 +40,21 @@ Per-page `full CER / body CER` under the common prompt:
 - **OvisOCR3**, its official Markdown prompt: macro CER 0.0024, body CER 0, mean 0.242 s/page, formulas 6/6 exact. The common prompt was slightly better on these pages. The model also publishes separate Markdown, structured-element, and layout-only prompt artifacts ([model card](https://huggingface.co/ATH-MaaS/OvisOCR3)).
 - **GLM-OCR**, official `Text Recognition:` plus `Formula Recognition:`: macro CER 0.2848 and formulas 6/6 exact, mean 0.395 s/page. The formula call returned nearly the same full-page text, so this run does not show a useful formula-only speed/quality tradeoff. The prompt categories are documented by [Z.ai](https://huggingface.co/zai-org/GLM-OCR).
 - **Xiaomi-OCR-0** documents a document prompt that explicitly ignores headers and footers, contrary to eOCR's preservation requirement. Its same-prompt run included them in the instruction but still omitted the footer on Russian, signature, and scan pages. See its [document task prompts](https://huggingface.co/xiaomi-research/Xiaomi-OCR-0).
+
+## Real-page text probe (English only)
+
+The DocLayNet tender page contains a table, text regions, footer, and a rasterized ECHA logo. Its PDF text layer was extracted with `pdftotext -layout`; the reference adds the visible logo text and groups the wrapped `Basis for assessment` table label with its row, based on visual inspection. The rest of the PDF text layer is not a fully hand-transcribed reference, so this single page is a diagnostic cross-check only.
+
+These are direct single-page VLM calls with one same-page warmup and one measured request per prompt. CER uses the helper's Unicode/whitespace normalization and removes Markdown table/heading markup; no formula is present. Each latency is one observed call, not a stable mean.
+
+| Model / prompt | Character edits / reference chars (CER ↓) | Observed s/page |
+|---|---:|---:|
+| OvisOCR3 · common prompt | 1 / 3093 (0.0003) | 1.324 |
+| PaddleOCR-VL-1.6 · common prompt | 78 / 3093 (0.0252) | 1.117 |
+| OvisOCR3 · official Markdown prompt | 5 / 3093 (0.0016) | 1.279 |
+| PaddleOCR-VL-1.6 · `OCR:` | 0 / 3093 (0.0000) | 1.042 |
+
+On this page, the model-specific prompts are close in normalized text accuracy: Ovis differs by five characters and Paddle matches the reference after markup/whitespace normalization. Paddle's common prompt omits most of the criterion sentence in the table row, while Ovis's common prompt is nearly exact. This reinforces prompt sensitivity and does not establish a model winner: the reference is only lightly audited, the sample is one English page, and no layout, formula, signature, or PDF→DOCX metrics are scored.
 
 ## Deployment failures and resources
 

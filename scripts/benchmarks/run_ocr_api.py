@@ -62,6 +62,7 @@ def main() -> None:
         body_hypothesis = without_footer(hypothesis, footer)
         body_distance = edit_distance(body_gold, body_hypothesis)
         recognized_formula = formula_key(formula_output or output)
+        formula_applicable = bool(expected_formula)
         rows.append({"page_id": page["id"], "kind": page["kind"], "language": page["language"],
                      "seconds": seconds + formula_seconds, "seconds_text": seconds,
                      "seconds_formula": formula_seconds, "reference_characters": len(gold), "edit_distance": distance,
@@ -69,8 +70,10 @@ def main() -> None:
                      "body_characters_excluding_footer_and_formula": len(body_gold),
                      "body_edit_distance": body_distance,
                      "body_cer_excluding_footer_and_formula": body_distance / max(1, len(body_gold)),
-                     "formula_exact": expected_formula in recognized_formula,
-                     "formula_casefold_match": expected_formula.casefold() in recognized_formula.casefold(),
+                     "formula_applicable": formula_applicable,
+                     "formula_exact": expected_formula in recognized_formula if formula_applicable else None,
+                     "formula_casefold_match": expected_formula.casefold() in recognized_formula.casefold()
+                     if formula_applicable else None,
                      "reference_signature_count": page["signature_count"],
                      "output": output, "formula_output": formula_output,
                      "usage": usage, "formula_usage": formula_usage})
@@ -83,7 +86,8 @@ def main() -> None:
                       "mean_text_cer_excluding_formula": sum(row["text_cer_excluding_formula"] for row in rows) / len(rows),
                       "micro_text_cer_excluding_formula": sum(row["edit_distance"] for row in rows) / max(1, sum(row["reference_characters"] for row in rows)),
                       "mean_body_cer_excluding_footer_and_formula": sum(row["body_cer_excluding_footer_and_formula"] for row in rows) / len(rows),
-                      "formula_exact_pages": sum(row["formula_exact"] for row in rows)}, ensure_ascii=False))
+                      "formula_exact_pages": sum(row["formula_exact"] is True for row in rows),
+                      "formula_applicable_pages": sum(row["formula_applicable"] for row in rows)}, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()

@@ -29,8 +29,9 @@ def formula_key(value: str) -> str:
 
 
 def without_formula(value: str, formula: str) -> str:
-    pattern = r"\s*".join(re.escape(char) for char in formula)
-    value = re.sub(pattern, " ", value, flags=re.IGNORECASE)
+    if formula:
+        pattern = r"\s*".join(re.escape(char) for char in formula)
+        value = re.sub(pattern, " ", value, flags=re.IGNORECASE)
     value = re.sub(r"<img\b[^>]*>|<[^>]+>", " ", value, flags=re.IGNORECASE)
     value = re.sub(r"(?m)^\s*\|[\s|:-]+\|\s*$", " ", value)
     value = re.sub(r"(?m)^\s{0,3}#{1,6}\s|\*\*|__|`{1,3}|\|", " ", value)
