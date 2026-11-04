@@ -73,10 +73,50 @@ A title-and-abstract crop from the staged DocLayNet Chinese patent page was comp
 
 All eight outputs reproduce the reference body text; the only edits are bracket glyphs and adjacent whitespace around patent labels `(54)` and `(57)`. In this one crop, the four candidates are therefore indistinguishable on substantive text accuracy; Paddle is fastest in the single observed warm calls, but these are not stable throughput measurements. The crop is small and contains no formulas, signatures, graphics, or layout challenge, so it cannot establish broad Chinese quality or a model winner.
 
+## Real-page text probe (full Simplified Chinese patent page)
+
+The same four candidates were then given the full 1025×1025 rasterized patent page, including its dense two-column bibliographic header and the title/abstract block. The title and abstract were compared against the corresponding text on [Google Patents](https://patents.google.com/patent/CN100339781C/zh); the rest of the page, including the technical drawing, does not have a verified reference annotation. This is therefore an exact-match check for the title and 298-character abstract in full-page context, not a full-page CER or layout score. Each prompt received one same-prompt warmup and one measured direct vLLM 0.32.0 BF16 call. Latencies below are single observations.
+
+| Model / prompt | Observed s/page | Title + abstract match | Completion tokens |
+|---|---:|---:|---:|
+| OvisOCR3 · common prompt | 1.399 | exact | 623 |
+| OvisOCR3 · official Markdown prompt | 1.305 | exact | 649 |
+| PaddleOCR-VL-1.6 · common prompt | 3.575* | exact | 2048* |
+| PaddleOCR-VL-1.6 · `OCR:` | 1.054 | exact | 616 |
+| GLM-OCR · common prompt | 1.013 | exact | 531 |
+| GLM-OCR · `Text Recognition:` | 0.848 | exact | 496 |
+| Xiaomi-OCR-0 · common prompt | 1.125 | exact | 545 |
+| Xiaomi-OCR-0 · official text-region prompt | 1.121 | exact | 563 |
+
+All eight outputs contain the exact title and abstract after whitespace normalization. The common-prompt Paddle request reached the 2048-token generation cap and continued transcribing beyond the abstract, so its 3.575-second latency is a capped, incomplete observation and should not be compared with completed calls. With each model's task prompt, this page gives no text-quality separation among the four; the observed times range from 0.848 to 1.121 seconds, but one warm call per prompt is not a throughput ranking. This result shows that these candidates are comparable on this Chinese passage in full-page context. It does not score the remaining metadata, drawing text, element geometry, reading order, signature/graphic handling, or PDF→DOCX output, and it does not select a winner.
+
+## Supplemental candidate probes (MiniCPM-OCR 1.0 and TeleOCR)
+
+### MiniCPM-OCR 1.0
+
+The pinned checkpoint `openbmb/MiniCPM-OCR-1.0@b2890ab4ce9d18c7f75b90966b76a972b6c9ac58` requires Transformers 5.21.0; the earlier vLLM 0.32.0 startup used Transformers 5.19.0 and could not recognize `minicpm_ocr`. The successful quality probe therefore used the official Transformers model class directly, BF16, the RTX 5090, 4× visual downsampling, and `max_new_tokens=2048`. Each of the common and official `Convert this page to markdown.` prompts had one same-prompt warmup before six serial seed-page requests. This is a model-only call; PP-DocLayoutV3 and the MiniCPM PDF parsing SDK were not in the path. See the [model card](https://huggingface.co/openbmb/MiniCPM-OCR-1.0) and [Transformers model documentation](https://huggingface.co/docs/transformers/main/en/model_doc/minicpm_ocr) for the supported architecture and prompt examples.
+
+| Prompt | Macro full-page CER ↓ | Macro body CER ↓ | Formula exact | Mean observed s/page |
+|---|---:|---:|---:|---:|
+| Common | 0.2472 | 0.0107 | 6/6 | 1.854 |
+| Official Markdown | 0.2588 | 0.0258 | 6/6 | 1.777 |
+
+The high full-page CER mostly comes from omitted footers; the English and Simplified/Traditional Chinese body text is exact on these fixtures. Russian body CER is 0.0642 with the common prompt and 0.1551 with the Markdown prompt, including mixed-script substitutions. The simple authored formula `x + y = z` matched on all six pages, which is only a narrow formula diagnostic.
+
+On the same lightly audited DocLayNet English tender reference used above, MiniCPM scores CER 0.0226 with the common prompt and 0.0207 with its Markdown prompt. On the full Simplified Chinese patent page, the title and 298-character abstract match exactly after whitespace normalization under both prompts; this is not a full-page score. Each of these real-page times is a single observation: 16.940/17.020 seconds for English and 15.767/15.339 seconds for Chinese, respectively. This run used direct Transformers 5.21.0 rather than vLLM and lacked the model's optional `causal_conv1d` and `flash-linear-attention` kernels, so its latency is not comparable with the vLLM cohort or OpenBMB's DSpark throughput claims. Peak CUDA allocator snapshots were 3.72 GiB allocated and 4.07 GiB reserved on the six-page run; these are not host-memory or production-pipeline peaks.
+
+### TeleOCR
+
+The pinned HF checkpoint `XingChen-AGI/TeleOCR@b3f6a0c084db72f971e19a779d2fd8a6bc9e3b8d` was loaded with its documented custom model class, BF16, and the RTX 5090. Direct Transformers requests emitted `<box:…><label:…>` layout tokens instead of recognized text; several pages had no transcript at all and one hit the output cap with repeated text. These outputs do not support text CER, formula, or layout-quality scoring and are not evidence that the model itself is poor. The authors' [`infer.py` and layout parser](https://github.com/caipeng328/TeleOCR) are the supported system path, but the public GitHub source repository currently declares no license and has no `LICENSE` file, so that pipeline was not executed. The [HF model card](https://huggingface.co/XingChen-AGI/TeleOCR) lists Apache-2.0 for the weights. Keep TeleOCR unscored until the supported pipeline and usable code license are both available. Its strong published benchmark values remain a separate public-source result in [issue #22](https://github.com/guility/eOCR/issues/22).
+
+## Current quality assessment
+
+The public comparison in [issue #22](https://github.com/guility/eOCR/issues/22) reports a tight OmniDocBench v1.6 cluster for the core candidates: MiniCPM-OCR 1.0 96.51, OvisOCR3 96.74, PaddleOCR-VL-1.6 96.34, Xiaomi-OCR-0 96.83, GLM-OCR 95.22, and TeleOCR 96.91. These are not one uniform independent run: the report distinguishes benchmark-owner results from model-author claims and different system pipelines. Locally, Ovis/Paddle are close on the lightly audited English page under model-appropriate prompts, and Ovis, Paddle, GLM, Xiaomi, and MiniCPM all reproduced the checked Chinese title/abstract. Among the six core candidates, Paddle is the strongest-supported test priority for Russian and Traditional Chinese because it has explicit MDPBench language rows; that supports keeping Paddle in the lead test cohort, not choosing it as the product-quality winner. Tele remains unranked locally, and MiniCPM's Russian fixture errors remain an open language risk.
+
 ## Deployment failures and resources
 
-- **TeleOCR:** pinned weights loaded under SGLang 0.5.23, but the direct chat-completions call produced unreadable token-like output; do not interpret its CER as model quality. The authors document a separate full parsing pipeline with layout modes and a vLLM backend ([project repository](https://github.com/caipeng328/TeleOCR)). That native path remains untested.
-- **MiniCPM-OCR 1.0:** vLLM 0.32.0 rejected its `minicpm_ocr` architecture before loading weights. Its supported deployment needs a separate pinned integration; no quality score was obtained ([model card and usage](https://huggingface.co/openbmb/MiniCPM-OCR-1.0)).
+- **TeleOCR:** the pinned weights loaded in SGLang and the Transformers model interface, but direct calls returned unreadable or structured layout tokens without recognized text; none is a quality score. Its full parsing pipeline with layout modes and a vLLM backend remains untested, and the source repository has no declared license. See the supplemental probe above and the [project repository](https://github.com/caipeng328/TeleOCR).
+- **MiniCPM-OCR 1.0:** vLLM 0.32.0 with Transformers 5.19.0 rejected its `minicpm_ocr` architecture. A pinned Transformers 5.21.0 direct-model comparison now supplies text-quality observations, but the official PDF SDK and PP-DocLayoutV3 system pipeline remain untested ([model card and usage](https://huggingface.co/openbmb/MiniCPM-OCR-1.0)).
 - Ready vLLM servers allocated about 18.8–19.7 GiB VRAM while idle in the observed Ovis and Paddle runs; this is a server reservation, not per-request peak memory. Container snapshots ranged roughly 4–5.4 GiB of the 8 GiB limit. No reliable peak host/GPU memory measurement is available for the whole cohort.
 
 ## Interpretation and next decision
