@@ -1,6 +1,6 @@
 # OCR shortlist: formal verification and Lean→Rust feasibility
 
-**Research note — 2026-11-05**  
+**Research note — 2026-11-05**
 **Sequence:** quality comparison first (#22/#25), then proof and Lean→Rust feasibility. This note follows that order. It does not select the production model or claim that local quality is already comparable end to end.
 
 ## 1. Quality checkpoint: what is and is not comparable
@@ -100,4 +100,3 @@ For a fixed graph and explicit shape/token range, Lean can reason about exact op
 - [Local quality comparison](local-gpu-ocr-evaluation.md), [public benchmark comparison #22](https://github.com/guility/eOCR/issues/22), [diagnostic local comparison #25](https://github.com/guility/eOCR/issues/25), [weighted-score proposal #17](https://github.com/guility/eOCR/issues/17), [accepted TCB decision #15](https://github.com/guility/eOCR/issues/15).
 - Official model/runtime sources are linked in the candidate matrix.
 - [Lean compilation](https://lean-lang.org/doc/reference/latest/Elaboration-and-Compilation/), [Lungo trust and verification](https://machinefabric.com/lungo/docs/explanation/trust-and-verification), [Peregrine backends](https://github.com/peregrine-project/peregrine-tool/blob/master/doc/backends.md), [LARK](https://arxiv.org/html/2611.02028v1), [LKV](https://github.com/facebookresearch/lean_kernel_verify), [CUDA platform](https://docs.nvidia.com/cuda/archive/13.2.1/cuda-programming-guide/01-introduction/cuda-platform.html).
-
