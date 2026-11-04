@@ -10,6 +10,32 @@
 - Model revisions: Paddle `c5630abae1d940eafe0697512a0325494b02ab42`; Ovis `17f255e2c8ae6d18d5d5edb0a474bd4ed39aef90`; GLM `2e85a62840ccac27daa451df36c736c4636b8628`; Xiaomi `bbd8cf8d21f256b3644b44cb860f3a7cecb93c30`; Tele `b3f6a0c084db72f971e19a779d2fd8a6bc9e3b8d`.
 - Mean latency is wall time per page after warmup; it excludes model download, startup, PDF rendering, and DOCX generation. GLM's official two-prompt run includes both calls. VRAM figures below are allocator snapshots, not measured peaks.
 
+## Public multilingual document-parsing evidence
+
+The MDPBench owner page describes 3,400 digital-born and photographed document images across 17 languages. The same detailed table exposes separate `All`, digital, photographed, Latin-language, non-Latin-language, and per-language results. The values below are copied from its expanded main-results table; they are benchmark scores, not CER and not measurements on eOCR's seed corpus. [MDPBench dataset card and results](https://huggingface.co/datasets/Delores-Lin/MDPBench)
+
+| Candidate | Overall: All | EN | RU | ZH | ZH-T | License / local-test status |
+|---|---:|---:|---:|---:|---:|---|
+| [MonkeyOCRv2-B-Parsing](https://huggingface.co/zenosai/MonkeyOCRv2-B-Parsing) | 83.3 | 84.5 | 80.1 | 83.6 | 75.3 | Apache-2.0; local inference blocked by container runtime |
+| [dots.mocr](https://huggingface.co/dots-studio/dots.mocr) | 80.5 | 87.4 | 71.2 | 84.6 | 79.6 | MIT; local GPU probe below |
+| [Chandra OCR 2](https://huggingface.co/datalab-to/chandra-ocr-2) | 79.7 | 86.5 | 74.0 | 73.8 | 76.3 | [Modified OpenRAIL-M](https://huggingface.co/datalab-to/chandra-ocr-2/blob/main/LICENSE); public-only until use is confirmed |
+| PaddleOCR-VL-1.6 | 75.0 | 79.7 | 70.7 | 78.0 | 75.7 | Local GPU comparison below |
+| HunyuanOCR-1.5 | 76.8 | 80.4 | 67.4 | 80.8 | 77.2 | Territory-gated local run; see the [license note in issue #25](https://github.com/guility/eOCR/issues/25) |
+
+These same-protocol rows make MonkeyOCRv2 and dots.mocr useful additions to the local quality cohort, but the language trade-off is clear: dots leads the listed EN and Simplified-Chinese values; Monkey leads the listed RU value; dots leads Traditional Chinese. The MDPBench page also shows a compact leaderboard widget whose one-number score differs from the detailed table for some entries (PaddleOCR-VL-1.6 is 78.9 in the widget, versus `All=75.0` and `Latin Avg=78.0` in the expanded table). Keep those aggregates separate. MDPBench does not score eOCR's vector-preservation or PDF→DOCX contract, so it only guides which alternatives deserve local evaluation.
+
+## What is comparable so far
+
+| Evidence slice | Comparable candidates | What it says | Limits |
+|---|---|---|---|
+| MDPBench detailed multilingual table | MonkeyOCRv2, dots.mocr, Chandra OCR 2, PaddleOCR-VL-1.6, HunyuanOCR-1.5 | Monkey leads the listed Russian row; dots leads English, Simplified Chinese, and Traditional Chinese. These are plausible alternatives, not an obvious Paddle-only field. | Compare only scores from the same expanded table. They are not CER, OmniDocBench values, or eOCR acceptance scores; Chandra and Hunyuan also have local-use restrictions. |
+| Same six synthetic page PNGs, common text prompt | OvisOCR3, PaddleOCR-VL-1.6, Xiaomi-OCR-0, GLM-OCR; dots.mocr on the same inputs | Ovis is near-exact; dots, GLM, and Xiaomi have low body CER; Paddle's universal prompt is substantially worse. | dots used SGLang rather than vLLM, so its latency is excluded from the four-model latency comparison. Tiny synthetic pages and text-only scoring do not establish product quality. |
+| Same six PNGs, model-task prompts | OvisOCR3, PaddleOCR-VL-1.6, GLM-OCR; MiniCPM-OCR-1.0 through Transformers | Prompt choice changes results materially. Ovis and Paddle are both near-exact on the checked English and Chinese references with their own task prompts; MiniCPM has a Russian fixture risk. | Not one shared prompt or one runtime; the tiny authored formula is only a narrow recognition check. |
+| Official PDF parsing pipeline | PaddleOCR-VL-1.6 only | Full PDF→JSON run exposed strong text on four fixtures, a Russian body-CER regression, and diagnostic table/image localization. | No other candidate has been run through a comparable full PDF pipeline; geometry labels and reading-order coverage are sparse, and no DOCX was generated. |
+| Structured layout output from page PNGs | dots.mocr only | Low body CER and good table/image box matches on this seed; it translated one English table cell and labeled every formula as text. | This is a model call on rendered PNGs, not the PDF parser or DOCX pipeline. Its latency is not comparable with Paddle's PDF pipeline. |
+
+The current evidence supports **overlap on some text subsets, not equivalence of end-to-end product quality**. Only the common-prompt direct calls provide a reasonably shared local setup; even there, prompt/runtime differences and the diagnostic corpus limit conclusions. Keep the quality comparison open until more representative documents and at least two supported full PDF pipelines have been scored against compatible semantic annotations.
+
 ## Same-prompt probe
 
 Prompt for all four rows: `Transcribe every visible text element from this document page, including headers and footers, in natural reading order. Preserve table contents and formulas in LaTeX. Do not translate, summarize, paraphrase, or omit content.` CER excludes the formula and formatting markup. Body CER also removes a near-matching trailing reference footer; full-page CER still counts missing or edited footers.
@@ -20,19 +46,22 @@ Prompt for all four rows: `Transcribe every visible text element from this docum
 | PaddleOCR-VL-1.6 | 0.2897 | 0.1395 | 0/6 · 6/6 | 0.174 |
 | Xiaomi-OCR-0 | 0.1042 | 0.0000 | 6/6 · 6/6 | 0.210 |
 | GLM-OCR | 0.2816 | 0.0047 | 6/6 · 6/6 | 0.220 |
+| dots.mocr* | 0.2931 | 0.0186 | 6/6 · 6/6 | 0.617* |
 
 The high GLM and Xiaomi full-page CER is almost entirely their omission of the fixed footer on some pages; their body scores expose that distinction. Paddle's same-prompt output is poor, especially on English and Chinese, despite near-exact text with its task prompt below. This is strong prompt sensitivity, not evidence that the model weights changed.
 
+`*` dots.mocr was added in the follow-up run with the same six page PNGs, same common prompt, BF16, and temperature 0, but used SGLang 0.5.23 rather than the vLLM 0.32.0 server used for the other four rows. Its 0.617 s/page includes a short SGLang call and is not a comparable latency measurement. Its high full-page CER comes largely from omitting the fixed footer; the footer-excluded body CER is the more informative text diagnostic here.
+
 Per-page `full CER / body CER` under the common prompt:
 
-| Page | OvisOCR3 | PaddleOCR-VL-1.6 | Xiaomi-OCR-0 | GLM-OCR |
-|---|---:|---:|---:|---:|
-| English | 0 / 0 | 0.3278 / 0.1196 | 0 / 0 | 0.2365 / 0 |
-| Russian | 0 / 0 | 0.2377 / 0.0053 | 0.2336 / 0 | 0.2459 / 0.0160 |
-| Simplified Chinese | 0.0071 / 0 | 0.5106 / 0.2619 | 0 / 0 | 0.4043 / 0 |
-| Traditional Chinese | 0 / 0 | 0.5106 / 0.2619 | 0 / 0 | 0.4113 / 0.0119 |
-| English + signature | 0 / 0 | 0.0756 / 0.0940 | 0.1959 / 0 | 0.1959 / 0 |
-| Image-only scan | 0 / 0 | 0.0756 / 0.0940 | 0.1959 / 0 | 0.1959 / 0 |
+| Page | OvisOCR3 | PaddleOCR-VL-1.6 | Xiaomi-OCR-0 | GLM-OCR | dots.mocr* |
+|---|---:|---:|---:|---:|---:|
+| English | 0 / 0 | 0.3278 / 0.1196 | 0 / 0 | 0.2365 / 0 | 0.2697 / 0.0435 |
+| Russian | 0 / 0 | 0.2377 / 0.0053 | 0.2336 / 0 | 0.2459 / 0.0160 | 0.2336 / 0 |
+| Simplified Chinese | 0.0071 / 0 | 0.5106 / 0.2619 | 0 / 0 | 0.4043 / 0 | 0.4043 / 0 |
+| Traditional Chinese | 0 / 0 | 0.5106 / 0.2619 | 0 / 0 | 0.4113 / 0.0119 | 0.4043 / 0 |
+| English + signature | 0 / 0 | 0.0756 / 0.0940 | 0.1959 / 0 | 0.1959 / 0 | 0.2234 / 0.0342 |
+| Image-only scan | 0 / 0 | 0.0756 / 0.0940 | 0.1959 / 0 | 0.1959 / 0 | 0.2234 / 0.0342 |
 
 ## Model-task prompt results
 
@@ -109,20 +138,39 @@ On the same lightly audited DocLayNet English tender reference used above, MiniC
 
 The pinned HF checkpoint `XingChen-AGI/TeleOCR@b3f6a0c084db72f971e19a779d2fd8a6bc9e3b8d` was loaded with its documented custom model class, BF16, and the RTX 5090. Direct Transformers requests emitted `<box:…><label:…>` layout tokens instead of recognized text; several pages had no transcript at all and one hit the output cap with repeated text. These outputs do not support text CER, formula, or layout-quality scoring and are not evidence that the model itself is poor. The authors' [`infer.py` and layout parser](https://github.com/caipeng328/TeleOCR) are the supported system path, but the public GitHub source repository currently declares no license and has no `LICENSE` file, so that pipeline was not executed. The [HF model card](https://huggingface.co/XingChen-AGI/TeleOCR) lists Apache-2.0 for the weights. Keep TeleOCR unscored until the supported pipeline and usable code license are both available. Its strong published benchmark values remain a separate public-source result in [issue #22](https://github.com/guility/eOCR/issues/22).
 
+## Supported PDF-pipeline diagnostic: PaddleOCR-VL-1.6
+
+The official PaddleOCR PDF parser was run on the six synthetic PDFs with `PaddleOCR 3.7.0`, `PaddlePaddle GPU 3.4.0`, pipeline `v1.6`, `device=gpu:0`, and PP-DocLayoutV3 enabled. The RTX 5090 was visible in the container. With one unmeasured warmup and six serial one-page PDFs, mean measured latency was **2.028 s/page**. This includes PDF loading, layout detection, recognition, and serialization to the pipeline's JSON result; it does not include DOCX creation or rendering.
+
+Macro full-page CER was **0.0271** (micro **0.0289**); body CER was **0.0359** (micro **0.0387**). The Russian page dominates the text errors: body CER **0.2032**, versus **0.0000** for English and Simplified Chinese and **0.0119** for Traditional Chinese. Formula text was found on all six pages and emitted under `vision_footnote`; its predicted box spans the surrounding reference sentence, so it did not reach IoU 0.5 against the narrower PAGE MathsRegion. The table box matched the annotated table on all six pages at IoU 0.5 (mean IoU **0.955**). On the two signature/scan pages, an `image` block matched the annotated graphic region on both (mean IoU **0.872**). The model calls it an image, not a signature, and this run did not generate a DOCX or test source-object extraction.
+
+The layout annotations split some text into smaller PAGE regions than the pipeline's merged text blocks: only 26 of 63 annotated text regions matched a predicted text box at IoU 0.5. Explicit reading-order indices were present on only 2–4 of each page's 6–8 blocks; table, formula, and footer entries often had no index. The 100% pairwise order score among the few matched, explicitly ordered items is too sparse to count as an order-quality result. This scorecard is diagnostic until the corpus uses semantic block annotations at the same granularity as the outputs.
+
+## Structured-output GPU probe: dots.mocr
+
+Pinned `dots-studio/dots.mocr@e539fbb52280393adc081b289ec597430a0f9031` (3B, BF16, MIT) was served in the SGLang `0.5.23` container on the RTX 5090. The six **page PNGs**, not PDFs, were sent through the model's documented layout prompt, with one unmeasured warmup and a 4096-token completion cap. The JSON output supplied layout categories, text, and bounding boxes; mean measured call time was **1.025 s/page**. [Model card and prompt](https://huggingface.co/dots-studio/dots.mocr)
+
+The structured-output scorer gives macro full-page CER **0.0159**, macro body CER **0.0186**, and micro body CER **0.0238**. Body CER was 0 for Russian and both Chinese fixtures; it was 0.0435 for the English fixture and 0.0342 for each English signature/scan fixture. Those eight-character English errors are the table cell `Editable DOCX` rendered as `可编辑 DOCX`; the model translated content despite the prompt's no-translation constraint. The formula string appeared on all six pages as inline LaTeX, but the model classified it as `Text` on all six rather than using its `Formula` category. Table boxes matched 6/6 annotated tables at IoU 0.5 (mean IoU **0.894**). The two signature/scan graphic boxes were emitted as `Picture` and matched 2/2 annotated graphic regions (mean IoU **0.824**). As with Paddle, those two fixtures only show image localization; they do not prove signature-specific detection or a DOCX raster insertion.
+
+The JSON array is in reading order; for these synthetic pages, the order of the geometry-matched elements agrees with PAGE order. That is a small diagnostic, not a broad layout result. These seconds are not directly comparable with Paddle's 2.028 s/page: dots received already-rendered PNGs, used a single SGLang call per page and did not perform PDF parsing or DOCX generation, while Paddle ran its PDF pipeline with layout detection and block recognition. The model card separately says complex tables/formulas and robust picture-to-SVG parsing remain limitations; eOCR should preserve source PDF vector/raster objects directly rather than depend on SVG reconstruction.
+
 ## Current quality assessment
 
-The public comparison in [issue #22](https://github.com/guility/eOCR/issues/22) reports a tight OmniDocBench v1.6 cluster for the core candidates: MiniCPM-OCR 1.0 96.51, OvisOCR3 96.74, PaddleOCR-VL-1.6 96.34, Xiaomi-OCR-0 96.83, GLM-OCR 95.22, and TeleOCR 96.91. These are not one uniform independent run: the report distinguishes benchmark-owner results from model-author claims and different system pipelines. Locally, Ovis/Paddle are close on the lightly audited English page under model-appropriate prompts, and Ovis, Paddle, GLM, Xiaomi, and MiniCPM all reproduced the checked Chinese title/abstract. Among the six core candidates, Paddle is the strongest-supported test priority for Russian and Traditional Chinese because it has explicit MDPBench language rows; that supports keeping Paddle in the lead test cohort, not choosing it as the product-quality winner. Tele remains unranked locally, and MiniCPM's Russian fixture errors remain an open language risk.
+The public comparison in [issue #22](https://github.com/guility/eOCR/issues/22) reports a tight OmniDocBench v1.6 cluster for the original candidates: MiniCPM-OCR 1.0 96.51, OvisOCR3 96.74, PaddleOCR-VL-1.6 96.34, Xiaomi-OCR-0 96.83, GLM-OCR 95.22, and TeleOCR 96.91. These are not one uniform independent run: the report distinguishes benchmark-owner results from model-author claims and different system pipelines. The separate MDPBench owner table elevates MonkeyOCRv2 and dots.mocr as multilingual alternatives, while Chandra OCR 2 and HunyuanOCR-1.5 add public evidence but remain locally gated by license/territory. None of the public benchmark numbers are merged with the local CER metrics.
+
+On local text probes, several models overlap on the small English and Chinese samples when given their documented prompts. The full Paddle PDF pipeline is an important counterexample to assuming benchmark transfer: its Russian fixture has body CER 0.2032 despite the public MDPBench row, and its structural output is not dense enough to validate reading order. dots.mocr's structured PNG run is promising for coarse geometry and Russian/Chinese text, but translated an English cell and did not classify formulas correctly. OvisOCR3 remains strong on the text-only seed; MiniCPM's Russian results remain a language risk. TeleOCR stays unranked locally because its supported parsing pipeline and code license are unresolved.
 
 ## Deployment failures and resources
 
 - **TeleOCR:** the pinned weights loaded in SGLang and the Transformers model interface, but direct calls returned unreadable or structured layout tokens without recognized text; none is a quality score. Its full parsing pipeline with layout modes and a vLLM backend remains untested, and the source repository has no declared license. See the supplemental probe above and the [project repository](https://github.com/caipeng328/TeleOCR).
 - **MiniCPM-OCR 1.0:** vLLM 0.32.0 with Transformers 5.19.0 rejected its `minicpm_ocr` architecture. A pinned Transformers 5.21.0 direct-model comparison now supplies text-quality observations, but the official PDF SDK and PP-DocLayoutV3 system pipeline remain untested ([model card and usage](https://huggingface.co/openbmb/MiniCPM-OCR-1.0)).
+- **MonkeyOCRv2-B-Parsing:** the pinned model was downloaded and recognized by its official `serve.py` registration in vLLM 0.25.1, but the server could not initialize because the Docker GPU runtime reports UVA unavailable. `VLLM_USE_V1=0` is ignored by this vLLM build, which continues to start its V1 engine. Pulling the officially supported no-DFlash vLLM 0.11.2 image then failed with `no space left on device`; no MonkeyOCRv2 inference or quality score was produced. This is a local runtime/storage blocker, not a model-quality result. The upstream README documents both supported vLLM paths and their versions ([MonkeyOCRv2 parsing instructions](https://github.com/Yuliang-Liu/MonkeyOCRv2#document-parsing)); vLLM's V1 engine creates a UVA-backed pinned-memory buffer ([implementation](https://github.com/vllm-project/vllm/blob/main/vllm/v1/worker/gpu/buffer_utils.py)) and has a reported WSL2 `UVA is not available` failure ([vLLM issue](https://github.com/vllm-project/vllm/issues/47387)).
 - Ready vLLM servers allocated about 18.8–19.7 GiB VRAM while idle in the observed Ovis and Paddle runs; this is a server reservation, not per-request peak memory. Container snapshots ranged roughly 4–5.4 GiB of the 8 GiB limit. No reliable peak host/GPU memory measurement is available for the whole cohort.
 
 ## Interpretation and next decision
 
-The local results **do not yet justify locking PaddleOCR as the quality winner**. They do support it as a strong, fast candidate when called with its documented task prompt. OvisOCR3 is comparably accurate on this tiny seed; Xiaomi and GLM are strong on body text but can omit footers. A universal prompt is not a fair sole ranking rule, while model-specific prompts are part of the production adapter and must be recorded.
+The combined public and local results **do not establish a quality winner or justify selecting PaddleOCR before comparing the alternatives**. Paddle is one credible candidate, but its full-pipeline Russian regression and sparse structural output matter for eOCR. OvisOCR3 is strong on this tiny text seed; dots.mocr has promising coarse layout results but its PNG-only run is not a full-pipeline comparison; MonkeyOCRv2 has strong public multilingual evidence but no local score yet. A universal prompt is not a fair sole ranking rule, while model-specific prompts are part of the production adapter and must be recorded.
 
-Before revisiting the model decision, enlarge the real-document corpus and run the supported full pipelines with page-level geometry, formula structure, graphic/signature preservation, and reading-order metrics. Keep the weighted score open under [issue #17](https://github.com/guility/eOCR/issues/17); do not use these six pages to set release thresholds. Only after the quality shortlist is stable should candidate-specific full-runtime verification and Lean→Rust feasibility drive the final choice. Existing source audit [#24](https://github.com/guility/eOCR/issues/24) is not a quality ranking.
+Before the later Lean→Rust and formal-verification assessment, first enlarge the real-document corpus, complete the alternative-model shortlist, and run supported full pipelines with page-level geometry, formula structure, graphic/signature preservation, and reading-order metrics. Keep the weighted score open under [issue #17](https://github.com/guility/eOCR/issues/17); do not use these six pages to set release thresholds. Only after the quality shortlist is stable should candidate-specific full-runtime verification and Lean→Rust feasibility drive the model/backend choice. Existing source audit [#24](https://github.com/guility/eOCR/issues/24) is not a quality ranking.
 
 Raw local responses and per-page measurements remain in the ignored `.delta/evaluation/` directory. The run helper is `scripts/benchmarks/run_ocr_api.py`; pinned revisions and generation settings are recorded in each JSON result.
