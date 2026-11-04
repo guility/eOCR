@@ -19,9 +19,9 @@ def make_page(sample_dir: Path) -> tuple[dict, int, dict]:
         width, height = image.size
     page = ET.Element(f"{{{PAGE_NS}}}PcGts")
     metadata = add(page, "Metadata")
+    add(metadata, "Creator").text = "eOCR DocLayNet adapter"
     for tag in ("Created", "LastChange"):
         add(metadata, tag).text = f"{date.today().isoformat()}T00:00:00Z"
-    add(metadata, "Creator").text = "eOCR DocLayNet adapter"
     page_node = add(page, "Page", imageFilename="page.jpg", imageWidth=width, imageHeight=height)
     group = add(add(page_node, "ReadingOrder"), "OrderedGroup", id="ro_1")
     text, text_count = text_regions(page_node, row, width, height)
