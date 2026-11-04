@@ -191,6 +191,7 @@ Complete this after a candidate run from the resolved runtime trace, not from it
 
 ## Evidence
 
+- [Evaluation corpus audit template](../corpus/evaluation-audit-template.md)
 - [Representative corpus and full-pipeline comparison question](https://github.com/guility/eOCR/issues/26)
 - [Accepted score resolution](https://github.com/guility/eOCR/issues/17#issuecomment-6637662045)
 - [Source-level inference paths for the PDF OCR shortlist](https://github.com/guility/eOCR/blob/research/gpu-ocr-evaluation/docs/research/frontier-inference-paths.md)
