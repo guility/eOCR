@@ -30,11 +30,11 @@ Synthetic text and graphics are fictional and marked **CC0-1.0**. Rendered PDFs 
 Run these commands from the repository root in PowerShell:
 
 ```powershell
-docker build -t eocr-corpus:local tools/corpus
-docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python tools/corpus/fetch_doclaynet.py
-docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python tools/corpus/build_doclaynet_annotations.py
-docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python tools/corpus/prepare_seed.py
-docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python tools/corpus/validate_page_xml.py
+docker build -t eocr-corpus:local -f deploy/Dockerfiles/corpus/Dockerfile .
+docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python scripts/corpus/fetch_doclaynet.py
+docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python scripts/corpus/build_doclaynet_annotations.py
+docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python scripts/corpus/prepare_seed.py
+docker run --rm -v "${PWD}:/workspace" -w /workspace eocr-corpus:local python scripts/corpus/validate_page_xml.py
 ```
 
 The official PAGE XSD is fetched from PRImA and pinned by SHA-256 in the validator. Validation checks the XSD, referenced image and dimensions, reading-order references, coordinate bounds, and formula/signature counts against sidecars.
