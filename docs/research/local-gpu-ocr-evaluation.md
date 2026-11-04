@@ -58,16 +58,20 @@ On this page, the model-specific prompts are close in normalized text accuracy: 
 
 ## Real-page text probe (Simplified Chinese raster crop)
 
-A title-and-abstract crop from the staged DocLayNet Chinese patent page was compared with the corresponding title and abstract on [Google Patents](https://patents.google.com/patent/CN100339781C/zh). This is an independent text reference for a small raster crop, not a full-page or acceptance-gold annotation. We ran the same direct vLLM 0.32.0, BF16 path as above, with one same-prompt warmup and one measured call; each prompt was measured once.
+A title-and-abstract crop from the staged DocLayNet Chinese patent page was compared with the corresponding title and abstract on [Google Patents](https://patents.google.com/patent/CN100339781C/zh). This is an independent text reference for a small raster crop, not a full-page or acceptance-gold annotation. We ran the same direct vLLM 0.32.0, BF16 path as above, with one same-prompt warmup and one measured call; each prompt was measured once. Model-specific prompts follow the official task examples for [OvisOCR3](https://huggingface.co/ATH-MaaS/OvisOCR3), [PaddleOCR-VL-1.6](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.6), [GLM-OCR](https://huggingface.co/zai-org/GLM-OCR), and [Xiaomi-OCR-0](https://huggingface.co/xiaomi-research/Xiaomi-OCR-0). Xiaomi's document prompt says to ignore headers and footers, so the comparison uses its text-region prompt instead.
 
-| Model / prompt | Observed s/crop | Text result against reference |
-|---|---:|---|
-| OvisOCR3 · common prompt | 0.354 | Body text exact; patent-label brackets differ |
-| PaddleOCR-VL-1.6 · common prompt | 0.271 | Body text exact; patent-label brackets differ |
-| OvisOCR3 · official Markdown prompt | 0.350 | Body text exact; patent-label brackets differ |
-| PaddleOCR-VL-1.6 · `OCR:` | 0.251 | Body text exact; patent-label brackets differ |
+| Model / prompt | Observed s/crop | Character edits / 298 ↓ |
+|---|---:|---:|
+| OvisOCR3 · common prompt | 0.354 | 6 (CER 0.0201) |
+| OvisOCR3 · official Markdown prompt | 0.350 | 6 (0.0201) |
+| PaddleOCR-VL-1.6 · common prompt | 0.271 | 4 (0.0134) |
+| PaddleOCR-VL-1.6 · `OCR:` | 0.251 | 4 (0.0134) |
+| GLM-OCR · common prompt | 0.315 | 4 (0.0134) |
+| GLM-OCR · `Text Recognition:` | 0.276 | 6 (0.0201) |
+| Xiaomi-OCR-0 · common prompt | 0.351 | 6 (0.0201) |
+| Xiaomi-OCR-0 · official text-region prompt | 0.401 | 4 (0.0134) |
 
-All four outputs reproduced the reference body text exactly after normalizing only layout whitespace; the remaining character edits are the alternative bracket glyphs around patent labels `(54)` and `(57)`. These single warm-call timings suggest that both candidates handle this particular Simplified Chinese printed passage well, with Paddle faster in this run. The crop is small and contains no formulas, signatures, graphics, or layout challenge, so it cannot establish broad Chinese quality or a model winner.
+All eight outputs reproduce the reference body text; the only edits are bracket glyphs and adjacent whitespace around patent labels `(54)` and `(57)`. In this one crop, the four candidates are therefore indistinguishable on substantive text accuracy; Paddle is fastest in the single observed warm calls, but these are not stable throughput measurements. The crop is small and contains no formulas, signatures, graphics, or layout challenge, so it cannot establish broad Chinese quality or a model winner.
 
 ## Deployment failures and resources
 
